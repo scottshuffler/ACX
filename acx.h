@@ -9,11 +9,32 @@ typedef		uint8_t			byte;
 typedef		uint8_t			bool;
 typedef 	void			(*PTHREAD)(void);
 
-#define		canary			0xDEADBEEF
+#define		stack_size		256
+#define		canary			0x11
+
 #define 	thread0_start	RAMEND
-#define		thread0_stop
-#define		thread1_start
-#define		thread1_stop
+#define		thread0_stop	(thread0_start - stack_size)
+
+#define		thread1_start	(thread0_stop - 1)
+#define		thread1_stop	(thread1_start - stack_size)
+
+#define		thread2_start	(thread1_stop - 1)
+#define		thread2_stop	(thread2_start - stack_size)
+
+#define		thread3_start	(thread2_stop - 1)
+#define		thread3_stop	(thread3_start - stack_size)
+
+#define		thread4_start	(thread3_stop - 1)
+#define		thread4_stop	(thread4_start - stack_size)
+
+#define		thread5_start	(thread4_stop - 1)
+#define		thread5_stop	(thread5_start - stack_size)
+
+#define		thread6_start	(thread5_stop - 1)
+#define		thread6_stop	(thread6_start - stack_size)
+
+#define		thread7_start	(thread6_stop - 1)
+#define		thread7_stop	(thread7_start - stack_size)	
 
 void x_init();
 void x_new(byte tid, PTHREAD pthread, byte  isEnabled);
