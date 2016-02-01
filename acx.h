@@ -1,6 +1,8 @@
 //Scott Shuffler
 
 #include <stdint.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 #define		x_getTID()		(x_thread_id)
 #define		MAX_THREADS		8
@@ -45,3 +47,18 @@ void x_resume(int tid);
 void x_disable(int tid);
 void x_enable(int tid);
 long g_time();
+uint8_t * changeStack(uint8_t *pNewStack);
+
+uint16_t delay_counters[8];
+
+byte disable_status;
+byte suspend_status;
+byte delay_status;
+
+struct control 
+{
+	uint8_t * p_base;
+	uint8_t * p_stack;
+};
+
+uint32_t timer;

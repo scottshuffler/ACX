@@ -2,11 +2,8 @@
 
 #include "acx.h"
 
-
-uint64_t timer = 0;
-
 int main () {
-
+	x_init();
 }
 
 /**
@@ -14,7 +11,16 @@ int main () {
  * Initializes and sets up the stack for all threads
  */
 void x_init() {
-
+	disable_status = 0x00;
+	suspend_status = 0x00;
+	delay_status = 0x00;
+	timer = 0;
+	struct control stack_control[8];
+	int i;
+	for (i=0;i<MAX_THREADS;i++) {
+		delay_counters[i] = (uint16_t) 0;
+	}
+	changeStack((uint8_t *)thread0_start);
 }
 
 /**
@@ -73,4 +79,42 @@ void x_enable(int tid) {
  */
 long g_time() {
 	return 0;
+}
+
+uint8_t * changeStack(uint8_t *pNewStack) {
+	// Interrupts off
+	cli();
+	
+	// Set retValue to 0 so the default will fall through
+	// Initializes a retAddress value used in the stack & upper and lower bounds
+	uint8_t * retValue = (uint8_t *)0;
+	uint8_t * retAddress = (uint8_t *)0;
+	uint8_t * upper = (uint8_t *)0xFFFF;
+	uint8_t * lower = (uint8_t *)0x200;
+	
+	// Ensures that the parameter given is between the correct bounds
+	// Saves the current SP and sets the retAddress to this value
+	// Moves the old stack to the new location allowing the stack to operate as normal
+	// Sets the retValue to the parameter to return
+	if (pNewStack > lower && pNewStack < upper) {
+		
+		uint16_t currSP = SP;
+		SP = (uint16_t)pNewStack;
+		retAddress = (uint8_t *)currSP;
+		
+		*(pNewStack)   = retAddress[0];
+		*(pNewStack+1) = retAddress[1];
+		*(pNewStack+2) = retAddress[2];
+		*(pNewStack+3) = retAddress[3];
+		*(pNewStack+4) = retAddress[4];
+		*(pNewStack+5) = retAddress[5];
+		*(pNewStack+6) = retAddress[6];
+		*(pNewStack+7) = retAddress[7];
+		retValue = pNewStack;
+	}
+	
+	// Interrupts on
+	sei();
+	
+	return retValue;
 }
