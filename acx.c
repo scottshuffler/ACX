@@ -11,15 +11,20 @@ int main () {
  * Initializes and sets up the stack for all threads
  */
 void x_init() {
-	disable_status = 0x00;
+	disable_status = 0xFE;
 	suspend_status = 0x00;
 	delay_status = 0x00;
+	x_thread_mask = 0x01;
 	timer = 0;
 	struct control stack_control[8];
+	stack_control[0].p_base = (uint8_t *) thread0_start;
+	stack_control[0].p_stack = (uint8_t *) thread0_start;
 	int i;
 	for (i=0;i<MAX_THREADS;i++) {
 		delay_counters[i] = (uint16_t) 0;
 	}
+
+	*((byte *)thread0_canary) = canary;
 	changeStack((uint8_t *)thread0_start);
 }
 
