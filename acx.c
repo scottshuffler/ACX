@@ -18,13 +18,20 @@ void x_init() {
 	timer = 0;
 	struct control stack_control[8];
 	stack_control[0].p_base = (uint8_t *) thread0_start;
-	stack_control[0].p_stack = (uint8_t *) thread0_start;
+	stack_control[0].p_stack = (uint8_t *) SP;
 	int i;
 	for (i=0;i<MAX_THREADS;i++) {
 		delay_counters[i] = (uint16_t) 0;
 	}
 
 	*((byte *)thread0_canary) = canary;
+	*((byte *)thread1_canary) = canary;
+	*((byte *)thread2_canary) = canary;
+	*((byte *)thread3_canary) = canary;
+	*((byte *)thread4_canary) = canary;
+	*((byte *)thread5_canary) = canary;
+	*((byte *)thread6_canary) = canary;
+	*((byte *)thread7_canary) = canary;
 	changeStack((uint8_t *)thread0_start);
 }
 
@@ -102,19 +109,18 @@ uint8_t * changeStack(uint8_t *pNewStack) {
 	// Moves the old stack to the new location allowing the stack to operate as normal
 	// Sets the retValue to the parameter to return
 	if (pNewStack > lower && pNewStack < upper) {
-		
 		uint16_t currSP = SP;
-		SP = (uint16_t)pNewStack;
+		//SP = (uint16_t)pNewStack;
 		retAddress = (uint8_t *)currSP;
 		
-		*(pNewStack)   = retAddress[0];
-		*(pNewStack+1) = retAddress[1];
-		*(pNewStack+2) = retAddress[2];
-		*(pNewStack+3) = retAddress[3];
-		*(pNewStack+4) = retAddress[4];
-		*(pNewStack+5) = retAddress[5];
-		*(pNewStack+6) = retAddress[6];
-		*(pNewStack+7) = retAddress[7];
+		*(pNewStack-7) = retAddress[0];
+		*(pNewStack-6) = retAddress[1];
+		*(pNewStack-5) = retAddress[2];
+		*(pNewStack-4) = retAddress[3];
+		*(pNewStack-3) = retAddress[4];
+		*(pNewStack-2) = retAddress[5];
+		*(pNewStack-1) = retAddress[6];
+		*(pNewStack) = retAddress[7];
 		retValue = pNewStack;
 	}
 	
