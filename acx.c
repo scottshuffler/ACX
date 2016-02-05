@@ -4,6 +4,7 @@
 
 int main () {
 	x_init();
+	x_new(T0_ID,thread0,0);
 }
 
 /**
@@ -15,6 +16,7 @@ void x_init() {
 	suspend_status = 0x00;
 	delay_status = 0x00;
 	x_thread_mask = 0x01;
+	x_thread_id = T0_ID;
 	timer = 0;
 	struct control stack_control[8];
 	stack_control[0].p_base = (uint8_t *) thread0_start;
@@ -36,12 +38,14 @@ void x_init() {
 }
 
 /**
+ * 
  * @param
  * @param
  * @param
  */
-void x_new(byte tid, PTHREAD pthread, byte  isEnabled) {
-
+void x_new(byte tid, PTHREAD pthread, byte beginDisabled) {
+	//int **pp = &p;
+	disable_status ^= 1 << tid;
 }
 
 /**
@@ -91,6 +95,20 @@ void x_enable(int tid) {
  */
 long g_time() {
 	return 0;
+}
+
+/**
+ * [thread0 description]
+ */
+void thread0() {
+
+}
+
+/**
+ * [thread1 description]
+ */
+void thread1() {
+
 }
 
 uint8_t * changeStack(uint8_t *pNewStack) {

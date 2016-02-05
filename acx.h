@@ -74,6 +74,7 @@ void x_resume(int tid);
 void x_disable(int tid);
 void x_enable(int tid);
 long g_time();
+void thread0();
 uint8_t * changeStack(uint8_t *pNewStack);
 
 uint16_t delay_counters[8];
@@ -82,6 +83,7 @@ byte disable_status;
 byte suspend_status;
 byte delay_status;
 byte x_thread_mask;
+byte x_thread_id;
 
 struct control 
 {
