@@ -76,6 +76,7 @@ void x_enable(int tid);
 long g_time();
 void thread0();
 uint8_t * changeStack(uint8_t *pNewStack);
+void createThreadStack(uint8_t *pNewStack, byte TID);
 
 uint16_t delay_counters[8];
 
@@ -90,5 +91,6 @@ struct control
 	uint8_t * p_base;
 	uint8_t * p_stack;
 };
+struct control stack_control[8];
 
 uint32_t timer;
