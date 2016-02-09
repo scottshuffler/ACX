@@ -8,5 +8,5 @@ Kernel written for an atmega2560
   - [X] initialize kernel data structures, create all threads, place canarys
 - [ ] x_new
   - [X] Create thread0 function
-  - [ ] Set up new stack for thread0 (first three for ret address and 18 for callee save registers)
-  - [ ] Set disable variable 
+  - [X] Set up new stack for thread0 (first three for ret address and 18 for callee save registers)
+  - [X] Set disable variable 
