@@ -123,7 +123,7 @@ long g_time() {
  * [thread0 description]
  */
 void thread0() {
-
+	x_yield;
 }
 
 /**
