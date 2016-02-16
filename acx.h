@@ -4,6 +4,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#ifndef ACX_H
+#define ACX_H
+
+#ifndef __ASSEMBLER__
 #define		x_getTID()		(x_thread_id)
 #define		MAX_THREADS		8
 #define		NUM_THREADS		8
@@ -75,6 +79,7 @@ void x_disable(int tid);
 void x_enable(int tid);
 long g_time();
 void thread0();
+void thread1();
 uint8_t * changeStack(uint8_t *pNewStack);
 void createThreadStack(uint8_t *pNewStack, byte TID);
 
@@ -94,3 +99,7 @@ struct control
 struct control stack_control[8];
 
 uint32_t timer;
+
+
+#endif
+#endif

@@ -1,6 +1,9 @@
 main: acx.c
 	avr-gcc -std=gnu99 -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=atmega2560 -DF_CPU=16000000L -MMD -DUSB_VID=null -DARDUINO=106 -I../lib -c -o ./output/acx.o acx.c 
-	avr-gcc -g -mmcu=atmega2560 -DF_CPU=16000000L -o ./output/acx.elf ./output/acx.o
+	avr-gcc -std=gnu99 -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=atmega2560 -DF_CPU=16000000L -MMD -DUSB_VID=null -DARDUINO=106 -I../lib -c -o ./output/acx_asm.o acx_asm.s 
+
+
+	avr-gcc -g -mmcu=atmega2560 -DF_CPU=16000000L -o ./output/acx.elf ./output/acx.o ./output/acx_asm.o
 	avr-objcopy -O ihex -R .eeprom ./output/acx.elf ./output/acx.hex 
 
 	#Starts up a screen to see serial output

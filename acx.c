@@ -5,6 +5,7 @@
 int main () {
 	x_init();
 	x_new(T0_ID,thread0,0);
+	x_new(T1_ID,thread1,0);
 	while (1) {
 
 	}
@@ -70,12 +71,7 @@ void x_new(byte tid, PTHREAD pthread, byte isEnabled) {
 	createThreadStack((uint8_t *)pthread, tid);
 }
 
-/**
- * 
- */
-void x_yield() {
 
-}
 
 /**
  * @param
@@ -123,7 +119,7 @@ long g_time() {
  * [thread0 description]
  */
 void thread0() {
-	x_yield;
+
 }
 
 /**
