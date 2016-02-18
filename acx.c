@@ -129,47 +129,49 @@ void thread1() {
 
 }
 
-uint8_t * changeStack(uint8_t *pNewStack) {
-	// Interrupts off
-	cli();
+// uint8_t * changeStack(uint8_t *pNewStack) {
+// 	// Interrupts off
+// 	cli();
 	
-	// Set retValue to 0 so the default will fall through
-	// Initializes a retAddress value used in the stack & upper and lower bounds
-	uint8_t * retValue = (uint8_t *)0;
-	uint8_t * retAddress = (uint8_t *)0;
-	uint8_t * upper = (uint8_t *)0xFFFF;
-	uint8_t * lower = (uint8_t *)0x200;
+// 	// Set retValue to 0 so the default will fall through
+// 	// Initializes a retAddress value used in the stack & upper and lower bounds
+// 	uint8_t * retValue = (uint8_t *)0;
+// 	uint8_t * retAddress = (uint8_t *)0;
+// 	uint8_t * upper = (uint8_t *)0xFFFF;
+// 	uint8_t * lower = (uint8_t *)0x200;
 	
-	// Ensures that the parameter given is between the correct bounds
-	// Saves the current SP and sets the retAddress to this value
-	// Moves the old stack to the new location allowing the stack to operate as normal
-	// Sets the retValue to the parameter to return
-	if (pNewStack > lower && pNewStack < upper) {
-		uint16_t currSP = SP;
-		//SP = (uint16_t)pNewStack;
-		retAddress = (uint8_t *)currSP;
+// 	// Ensures that the parameter given is between the correct bounds
+// 	// Saves the current SP and sets the retAddress to this value
+// 	// Moves the old stack to the new location allowing the stack to operate as normal
+// 	// Sets the retValue to the parameter to return
+// 	if (pNewStack > lower && pNewStack < upper) {
+// 		uint16_t currSP = SP;
+// 		//SP = (uint16_t)pNewStack;
+// 		retAddress = (uint8_t *)currSP;
 		
-		*(pNewStack-7) = retAddress[0];
-		*(pNewStack-6) = retAddress[1];
-		*(pNewStack-5) = retAddress[2];
-		*(pNewStack-4) = retAddress[3];
-		*(pNewStack-3) = retAddress[4];
-		*(pNewStack-2) = retAddress[5];
-		*(pNewStack-1) = retAddress[6];
-		*(pNewStack) = retAddress[7];
-		retValue = pNewStack;
-	}
+// 		*(pNewStack-7) = retAddress[0];
+// 		*(pNewStack-6) = retAddress[1];
+// 		*(pNewStack-5) = retAddress[2];
+// 		*(pNewStack-4) = retAddress[3];
+// 		*(pNewStack-3) = retAddress[4];
+// 		*(pNewStack-2) = retAddress[5];
+// 		*(pNewStack-1) = retAddress[6];
+// 		*(pNewStack) = retAddress[7];
+// 		retValue = pNewStack;
+// 	}
 	
-	// Interrupts on
-	sei();
+// 	// Interrupts on
+// 	sei();
 	
-	return retValue;
-}
+// 	return retValue;
+// }
 
 void createThreadStack(uint8_t *pNewStack, byte TID) {
-	*((uint8_t * ) SP) = *(pNewStack);
-	*((uint8_t * ) SP - 1) = *(pNewStack + 1);
-	*((uint8_t * ) SP - 2) = *(pNewStack + 2);
+	cli();
+	*((uint8_t * ) stack_control[TID].p_stack) = ((int) pNewStack & 0xff);
+	*((uint8_t * ) stack_control[TID].p_stack - 1) = ((int) pNewStack & 0xff00) >> 8;
+	*((uint8_t * ) stack_control[TID].p_stack - 2) = ((int) pNewStack & 0xff0000) >> 16;
 	stack_control[TID].p_stack = (uint8_t *) (stack_control[TID].p_stack - 0x15);
+	sei();
 }
 
