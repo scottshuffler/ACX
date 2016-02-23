@@ -144,4 +144,4 @@ restore:
 	pop r3
 	pop r2
 		; Return to next thread
-		ret
+	ret

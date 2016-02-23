@@ -2,12 +2,15 @@
 
 #include "acx.h"
 
+volatile int counter = 500;
+
 int main () {
+	init_timer0();
 	x_init();
 	x_new(T0_ID,thread0,0);
 	x_new(T1_ID,thread1,0);
 	while (1) {
-
+		
 	}
 }
 
@@ -77,7 +80,9 @@ void x_new(byte tid, PTHREAD pthread, byte isEnabled) {
  * @param
  */
 void x_delay(int ticks) {
-
+	disable_status |= (1 << x_thread_id);
+	delay_counters[x_thread_id] = ticks;
+	x_yield();
 }
 
 /**
@@ -119,14 +124,18 @@ long g_time() {
  * [thread0 description]
  */
 void thread0() {
-
+	while(1) {
+		x_yield();
+	}
 }
 
 /**
  * [thread1 description]
  */
 void thread1() {
-
+	while(1) {
+		x_yield();
+	}
 }
 
 // uint8_t * changeStack(uint8_t *pNewStack) {
@@ -175,3 +184,26 @@ void createThreadStack(uint8_t *pNewStack, byte TID) {
 	sei();
 }
 
+void init_timer0() {
+	TCCR0A = 0x02;
+	TIMSK0 = 0X02;
+	OCR0A = 250;
+	TCCR0B = 0X03;
+	sei();
+}
+
+ISR(TIMER0_COMPA_vect) {
+	counter--;
+	if (counter <= 0) {
+		counter = 500;
+	}
+	int i;
+	for (i = 0; i < 8; i++) {
+		if (delay_counters[i] > 0) {
+			delay_counters[i]--;
+			if (delay_counters[i] == 0) {
+				x_enable();
+			}
+		}
+	}
+}
