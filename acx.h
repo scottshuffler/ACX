@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "serial.h"
 
 #ifndef ACX_H
 #define ACX_H

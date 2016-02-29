@@ -1,17 +1,23 @@
 //Scott Shuffler
 
 #include "acx.h"
-
+#include "util/atomic.h"
 volatile int counter = 500;
 
 int main () {
-	init_timer0();
-	x_init();
-	x_new(T0_ID,thread0,0);
-	x_new(T1_ID,thread1,0);
-	while (1) {
-		
-	}
+	// init_timer0();
+	// x_init();
+	// x_new(T0_ID,thread0,0);
+	// x_new(T1_ID,thread1,0);
+	serial_open(19200, SERIAL_8N1);
+    while(1)
+    {
+		if(serial_read())
+		{
+			serial_write((unsigned char)(UDR0));
+
+		}
+    }
 }
 
 /**
@@ -80,8 +86,10 @@ void x_new(byte tid, PTHREAD pthread, byte isEnabled) {
  * @param
  */
 void x_delay(int ticks) {
-	disable_status |= (1 << x_thread_id);
-	delay_counters[x_thread_id] = ticks;
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		disable_status |= (1 << x_thread_id);
+		delay_counters[x_thread_id] = ticks;
+	}
 	x_yield();
 }
 
@@ -89,35 +97,47 @@ void x_delay(int ticks) {
  * @param
  */
 void x_suspend(int tid) {
-
+	byte temp = SREG;
+	cli(); 
+	suspend_status |= 1 << tid;
+	SREG = temp;
 }
 
 /**
  * @param
  */
 void x_resume(int tid) {
-
+byte temp = SREG;
+	cli(); 
+	suspend_status &= ~(1 << tid);
+	SREG = temp;
 }
 
 /**
  * @param
  */
 void x_disable(int tid) {
-
+byte temp = SREG;
+	cli(); 
+	disable_status |= 1 << tid;
+	SREG = temp;
 }
 
 /**
  * @param
  */
 void x_enable(int tid) { 
-
+byte temp = SREG;
+	cli(); 
+	disable_status &= ~(1 << tid);
+	SREG = temp;
 }
 
 /**
  * @return
  */
 long g_time() {
-	return 0;
+	return timer;
 }
 
 /**
@@ -193,17 +213,15 @@ void init_timer0() {
 }
 
 ISR(TIMER0_COMPA_vect) {
-	counter--;
-	if (counter <= 0) {
-		counter = 500;
-	}
+	timer++;
 	int i;
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < NUM_THREADS; i++) {
 		if (delay_counters[i] > 0) {
 			delay_counters[i]--;
 			if (delay_counters[i] == 0) {
-				x_enable();
+				disable_status &= ~(1 << i);
 			}
 		}
+
 	}
 }
